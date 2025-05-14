@@ -1,0 +1,1804 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xmile version="1.0" xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0" xmlns:isee="http://iseesystems.com/XMILE">
+	<header>
+		<smile version="1.0" namespace="std, isee"/>
+		<name>Final Model for Oil Market</name>
+		<uuid>92a2b257-9f6b-415f-802b-0647ff1f860c</uuid>
+		<vendor>isee systems, inc.</vendor>
+		<product version="3.8.1" isee:build_number="3632" isee:saved_by_v1="true" lang="en">Stella Architect</product>
+	</header>
+	<sim_specs isee:sim_duration="1.492538" isee:run_prefix="Run" isee:simulation_delay="0.00746269" isee:restore_on_start="false" method="RK4" time_units="Years" isee:instantaneous_flows="false" isee:ignore_module_errors="false" isee:strict_units="false" isee:loop_scores="true" isee:loop_exhaustive_allowed="1000">
+		<start>0</start>
+		<stop>200</stop>
+		<dt reciprocal="true">4</dt>
+	</sim_specs>
+	<isee:prefs saved_runs="5" keep="false" show_module_prefix="true" live_update_on_drag="true" show_restore_buttons="false" layer="model" isee:design="" isee:design_custom="false" interface_scale_ui="true" interface_max_page_width="10000" interface_max_page_height="10000" interface_min_page_width="0" interface_min_page_height="0" rifp="true"/>
+	<isee:multiplayer_settings include_chat="true" allow_observers="false" advance_time_increment="1" max_advance_time_in_ms="0" model_stops_when_players_drop="false" observer_start_page="home_page" enabled="false"/>
+	<isee:time_formats default_format="Builtin">
+		<isee:time_format name="Builtin" type="adaptive"/>
+	</isee:time_formats>
+	<isee:number_format_extenders/>
+	<default_format/>
+	<model_units>
+		<unit name="Dimensionless">
+			<eqn>1</eqn>
+			<alias>dmnl</alias>
+			<alias>unitless</alias>
+			<alias>fraction</alias>
+		</unit>
+		<unit name="Years">
+			<eqn/>
+			<alias>yr</alias>
+			<alias>year</alias>
+		</unit>
+		<unit name="US Dollars">
+			<eqn/>
+			<alias>USD</alias>
+			<alias>$</alias>
+		</unit>
+	</model_units>
+	<model>
+		<isee:extra_collection_variables>
+			<isee:extra_collection_variable name="Global_oil_demand"/>
+			<isee:extra_collection_variable name="Global_oil_supply"/>
+			<isee:extra_collection_variable name="Non_OPEC_supply"/>
+			<isee:extra_collection_variable name="OPEC_supply"/>
+			<isee:extra_collection_variable name="Price"/>
+		</isee:extra_collection_variables>
+		<variables>
+			<stock name="Traders expected price">
+				<eqn>50</eqn>
+				<inflow>Change_in_traders_expected_price</inflow>
+				<units>US Dollars/barrel</units>
+			</stock>
+			<flow name="Change in traders expected price">
+				<eqn>(Price-Traders_expected_price)/Time_to_adjust_traders_expected_price</eqn>
+				<units>US Dollars/barrel/Years</units>
+			</flow>
+			<aux name="Time to adjust\ntraders expected price">
+				<eqn>2.5</eqn>
+				<units>Years</units>
+			</aux>
+			<aux name="Effect of demand\nsupply ratio on price">
+				<eqn>Global_demand_to_supply_ratio^Sensitivity_of_price_to_demand_supply_ratio</eqn>
+				<units>Dimensionless</units>
+			</aux>
+			<aux name="Sensitivity of price\nto demand supply ratio">
+				<eqn>0.25</eqn>
+				<units>dmnl</units>
+			</aux>
+			<stock name="Global oil demand">
+				<eqn>Reference_demand</eqn>
+				<format precision="1"/>
+				<inflow>Change_in_global_oil_demand</inflow>
+				<units>Million bbls</units>
+			</stock>
+			<stock name="Global oil supply">
+				<eqn>Reference_supply</eqn>
+				<inflow>Change_in_global_oil_supply</inflow>
+				<units>Million bbls</units>
+			</stock>
+			<flow name="Change in global oil\ndemand">
+				<eqn>(Expected_demand-Global_oil_demand)/Time_to_adjust_demand</eqn>
+				<units>Million bbls/years</units>
+			</flow>
+			<flow name="Change in\nglobal oil supply">
+				<eqn>(Expected_supply-Global_oil_supply)/Time_to_adjust_supply</eqn>
+				<units>Million bbls/years</units>
+			</flow>
+			<aux name="Global demand\nto supply ratio">
+				<doc>The oil market model consists of the oil demand and oil supply loops. The connecting variable of the two
+sides of the market is the oil price whose value is determined by the Supply to Demand Ratio (SDR). As
+the oil supply is increased the SDR is increased and subsequently, the oil price is decreased. On the other
+hand, a decreasing oil price results in a growth in the oil demand and a reduction in the SDR. The feedback
+loop interaction of these variables results in a new balance in the oil price. However, as noted earlier, many
+factors other than the aggregated supply and demand are influential in the oil market. Figure 1 shows the
+overall oil market model in detail.</doc>
+				<eqn>(Global_oil_demand)//(Global_oil_supply)</eqn>
+				<units>Dimensionless</units>
+			</aux>
+			<aux name="Reference price">
+				<doc>reference price and reference supply and demand are set for 2013
+
+price 98
+supply 98
+demand 98
+
+
+
+
+The cost that consumers anticipate paying or consider reasonable to pay for a particular good or service. The marketing department of a business will often attempt to assess the reference price for each of the products or services they are promoting in order to set pricing levels appropriately to achieve their marketing goals.
+</doc>
+				<eqn>50</eqn>
+				<units>US Dollars/barrel</units>
+			</aux>
+			<aux name="Effect of price on demand">
+				<eqn>(Traders_expected_price/Reference_price)^Demand_elasticity</eqn>
+				<units>Dimensionless</units>
+			</aux>
+			<aux name="Price">
+				<eqn>Traders_expected_price*Effect_of_demand_supply_ratio_on_price</eqn>
+				<units>US Dollars/barrel</units>
+			</aux>
+			<aux name="Time to adjust supply">
+				<eqn>2.5</eqn>
+				<units>Years</units>
+			</aux>
+			<aux name="Time to adjust demand">
+				<eqn>2.5</eqn>
+				<units>Years</units>
+			</aux>
+			<aux name="Expected demand">
+				<eqn>Global_oil_demand*Effect_of_price_on_demand</eqn>
+				<units>Million bbls</units>
+			</aux>
+			<aux name="Expected supply">
+				<eqn>OPEC_supply+Non_OPEC_supply</eqn>
+				<units>Million bbls</units>
+			</aux>
+			<aux name="Reference demand">
+				<eqn>2934</eqn>
+				<units>Million bbls</units>
+			</aux>
+			<aux name="Effect of oil price change on\nNon OPEC oil supply">
+				<eqn>Traders_expected_price/Reference_price</eqn>
+				<format precision="0.01"/>
+				<gf>
+					<xscale min="0.1" max="2.5"/>
+					<yscale min="0.32" max="1.58"/>
+					<ypts>0.32,0.45,0.55,0.63,0.71,0.77,0.84,0.9,0.95,1,1.05,1.095,1.14,1.18,1.22,1.26,1.303,1.34,1.38,1.41,1.45,1.48,1.52,1.55,1.58</ypts>
+				</gf>
+				<units>dmnl</units>
+			</aux>
+			<aux name="OPEC supply">
+				<eqn>Reference_OPEC_supply*Effect_of_price_on_OPEC_oil_supply</eqn>
+				<units>Million bbls</units>
+			</aux>
+			<aux name="Reference\nOPEC supply">
+				<eqn>978</eqn>
+				<units>Million bbls</units>
+			</aux>
+			<aux name="Non OPEC supply">
+				<eqn>Reference_Non_OPEC_supply*Effect_of_oil_price_change_on_Non_OPEC_oil_supply</eqn>
+				<units>Million bbls</units>
+			</aux>
+			<aux name="Reference\nNon OPEC\nsupply">
+				<eqn>1956</eqn>
+				<units>Million bbls</units>
+			</aux>
+			<aux name="Effect of price\non\nOPEC oil supply">
+				<eqn>Traders_expected_price/Reference_price</eqn>
+				<gf>
+					<xscale min="0.1" max="2.5"/>
+					<yscale min="0" max="2"/>
+					<ypts>0.63,0.72,0.79,0.83,0.87,0.9,0.93,0.96,0.98,1,1.01,1.03,1.05,1.06,1.08,1.098,1.11,1.12,1.137,1.149,1.16,1.171,1.181,1.191,1.2</ypts>
+				</gf>
+				<units>Dimensionless</units>
+			</aux>
+			<aux name="Reference supply">
+				<eqn>2934</eqn>
+				<units>Million bbls</units>
+			</aux>
+			<aux name="Demand elasticity">
+				<eqn>-0.13</eqn>
+				<units>Dimensionless</units>
+			</aux>
+		</variables>
+		<views>
+			<style color="black" background="white" font_style="normal" font_weight="normal" text_decoration="none" text_align="center" vertical_text_align="center" font_color="black" font_family="Arial" font_size="10pt" padding="2" border_color="black" border_width="thin" border_style="none">
+				<text_box color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt"/>
+				<isee:loop_indicator color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt"/>
+				<numeric_display color="blue" background="white" font_size="9pt" border_width="thin" border_style="solid" isee:transparent="false" isee:show_divider="true" isee:show_bounding_box="true" label_side="left"/>
+				<graph color="black" background="white" font_size="12pt" axis_color="#666666" grid_color="#C8C8C8" isee:graph_area_color="white" legend_position="bottom" isee:transparent="false" isee:hide_border="false" axis_title_font_style="normal" axis_title_font_weight="normal" axis_title_text_decoration="none" axis_title_text_align="center" axis_title_vertical_text_align="center" axis_title_font_color="black" axis_title_font_family="Arial" axis_title_font_size="12pt" axis_title_text_padding="2" axis_title_text_border_color="black" axis_title_text_border_width="thin" axis_title_text_border_style="none" axis_label_font_style="normal" axis_label_font_weight="normal" axis_label_text_decoration="none" axis_label_text_align="center" axis_label_vertical_text_align="center" axis_label_font_color="black" axis_label_font_family="Arial" axis_label_font_size="9pt" axis_label_text_padding="2" axis_label_text_border_color="black" axis_label_text_border_width="thin" axis_label_text_border_style="none">
+					<isee:series_styles>
+						<isee:series_style color="blue" thickness="1"/>
+						<isee:series_style color="red" thickness="1" pen_style="dot_dashed"/>
+						<isee:series_style color="fuchsia" thickness="1" pen_style="dotted"/>
+						<isee:series_style color="#008F44" thickness="1" pen_style="dashed"/>
+						<isee:series_style color="#FF7F00" thickness="1"/>
+						<isee:series_style color="#7F00FF" thickness="1" pen_style="dot_dashed"/>
+						<isee:series_style color="#0CA0FF" thickness="1" pen_style="dotted"/>
+						<isee:series_style color="lime" thickness="1" pen_style="dashed"/>
+						<isee:series_style color="#FF007F" thickness="1"/>
+						<isee:series_style color="aqua" thickness="1" pen_style="dot_dashed"/>
+						<isee:series_style color="#F586FF" thickness="1" pen_style="dotted"/>
+						<isee:series_style color="black" thickness="1" pen_style="dashed"/>
+						<isee:series_style color="#C8C8C8" thickness="1"/>
+					</isee:series_styles>
+				</graph>
+				<table color="black" background="#E0E0E0" text_align="right" font_size="12pt" orientation="vertical" wrap_text="false" isee:auto_fit="true" isee:use_alternate_row_colors="false" isee:unlimited_table_length="false" blank_column_width="80" column_width="160" interval="1" report_balances="ending" report_flows="summed" header_font_style="normal" header_font_weight="normal" header_text_decoration="none" header_text_align="center" header_vertical_text_align="center" header_font_color="black" header_font_family="Arial" header_font_size="12pt" header_text_padding="2" header_text_border_color="black" header_text_border_width="thin" header_text_border_style="none"/>
+				<button color="black" background="#E0E0E0" font_size="12pt" border_width="thin" border_style="solid" transparent="false" corner_radius="0" isee:flat="false" icon_side="top" isee:highlight_on_hover="false" isee:highlight_color="#959595"/>
+				<isee:annotation color="black" background="#E0E0E0" font_size="12pt" border_width="thin" border_style="solid" transparent="false" corner_radius="0" isee:flat="false" icon_side="top" isee:highlight_on_hover="false" isee:highlight_color="#959595" popup_corner_radius="0" popup_background_color="#FFFECF"/>
+				<slider color="#0075FF" background="#E0E0E0" font_size="12pt" num_ticks="3" label_side="top" wrap_title="true" vertical="false" isee:fancy_appearance="false" isee:show_hover_tip="when_deciding" input_expands="true" input_width="100"/>
+				<isee:stacked_container color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt" padding="6 8" border_color="#999999" border_width="thin" border_style="solid" item_spacing="0" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD" transparent_bg="false"/>
+				<isee:dual_slider color="black" background="white" font_size="12pt" num_ticks="3" label_side="top" wrap_title="true" isee:show_hover_tip="when_deciding" input_expands="true" input_width="100"/>
+				<isee:sim_speed_slider color="black" background="white"/>
+				<isee:time_slider color="#E95F74" background="silver"/>
+				<isee:pie_input color="black" background="white" font_size="12pt" legend_position="bottom" isee:transparent="false"/>
+				<knob color="#66CC66" background="#E0E0E0" font_size="12pt" label_side="bottom" wrap_title="true"/>
+				<numeric_input color="black" background="#E0E0E0" font_size="12pt" label_side="left" wrap_title="true" input_expands="false" input_width="100"/>
+				<isee:dropdown_input color="black" background="white" font_size="12pt" label_side="left" wrap_title="true" input_expands="false" input_width="100"/>
+				<switch color="black" background="#E0E0E0" font_size="12pt" label_side="top" wrap_title="true" isee:appearance="switch" isee:on_color="green"/>
+				<options color="black" background="white" appearance="radio-buttons" arrangement="vertical"/>
+				<graphical_input color="black" background="#E0E0E0" font_size="12pt" isee:show_hover_tip="true"/>
+				<group_input color="black" background="#E0E0E0" font_size="12pt"/>
+				<lamp color="black" background="white" font_size="9pt"/>
+				<gauge color="black" background="white" font_size="9pt" needle_color="#F09F72" bar_color="#EEEEEE" bar_progress_color="black" appearance="radial" num_major_ticks="11" num_minor_ticks="11" show_numeric_value="true"/>
+				<isee:spatial_map color="black" background="white" font_size="12pt"/>
+				<isee:animation_object color="black" background="white" font_size="12pt"/>
+				<isee:navigation_widget color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt" padding="6 8" border_color="#999999" border_width="thin" border_style="solid" item_spacing="6" appearance="tabs" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD" transparent_bg="false"/>
+				<isee:shape color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt" border_width="thin" border_style="solid" opacity="1" transparent_background="true" corner_radius="1"/>
+				<isee:selector color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt"/>
+				<isee:iframe color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt" border_width="thin" border_style="solid"/>
+				<isee:financial_table color="black" background="white" text_align="right" font_size="12pt" hide_border="false" auto_fit="true" first_column_width="250" other_column_width="100" header_font_style="normal" header_font_weight="bold" header_text_decoration="none" header_text_align="center" header_vertical_text_align="center" header_font_color="black" header_font_family="Arial" header_font_size="14pt" header_text_padding="2" header_text_border_color="black" header_text_border_width="thin" header_text_border_style="none"/>
+			</style>
+			<view isee:show_pages="false" background="white" page_width="1024" page_height="784" isee:page_cols="4" isee:page_rows="5" zoom="60" isee:popup_graphs_are_comparative="true" isee:enable_non_negative_highlights="false" type="stock_flow">
+				<style color="black" background="white" font_style="normal" font_weight="normal" text_decoration="none" text_align="center" vertical_text_align="center" font_color="black" font_family="Arial" font_size="10pt" padding="2" border_color="black" border_width="thin" border_style="none">
+					<stock color="blue" background="white" font_color="blue" font_size="9pt" label_side="top">
+						<shape type="rectangle" width="45" height="35"/>
+					</stock>
+					<flow color="blue" background="white" font_color="blue" font_size="9pt" label_side="bottom">
+						<shape type="circle" radius="18"/>
+					</flow>
+					<isee:placeholder color="#228B22" background="white" font_color="#228B22" label_side="bottom"/>
+					<module color="blue" background="white" font_color="blue" font_size="9pt" label_side="top">
+						<shape type="rectangle" width="55" height="45"/>
+					</module>
+					<aux color="blue" background="white" font_color="blue" font_size="9pt" label_side="bottom">
+						<shape type="circle" radius="18"/>
+					</aux>
+					<group color="red" background="white" font_color="red" font_size="9pt"/>
+					<connector color="#FF007F" background="white" font_color="#FF007F" font_size="9pt" isee:thickness="1"/>
+					<text_box color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt"/>
+					<isee:loop_indicator color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt"/>
+					<numeric_display color="blue" background="white" font_size="9pt" border_width="thin" border_style="solid" isee:transparent="false" isee:show_divider="true" isee:show_bounding_box="true" label_side="left"/>
+					<graph color="black" background="white" font_size="12pt" axis_color="#666666" grid_color="#C8C8C8" isee:graph_area_color="white" legend_position="bottom" isee:transparent="false" isee:hide_border="false" axis_title_font_style="normal" axis_title_font_weight="normal" axis_title_text_decoration="none" axis_title_text_align="center" axis_title_vertical_text_align="center" axis_title_font_color="black" axis_title_font_family="Arial" axis_title_font_size="12pt" axis_title_text_padding="2" axis_title_text_border_color="black" axis_title_text_border_width="thin" axis_title_text_border_style="none" axis_label_font_style="normal" axis_label_font_weight="normal" axis_label_text_decoration="none" axis_label_text_align="center" axis_label_vertical_text_align="center" axis_label_font_color="black" axis_label_font_family="Arial" axis_label_font_size="9pt" axis_label_text_padding="2" axis_label_text_border_color="black" axis_label_text_border_width="thin" axis_label_text_border_style="none">
+						<isee:series_styles>
+							<isee:series_style color="blue" thickness="1"/>
+							<isee:series_style color="red" thickness="1" pen_style="dot_dashed"/>
+							<isee:series_style color="fuchsia" thickness="1" pen_style="dotted"/>
+							<isee:series_style color="#008F44" thickness="1" pen_style="dashed"/>
+							<isee:series_style color="#FF7F00" thickness="1"/>
+							<isee:series_style color="#7F00FF" thickness="1" pen_style="dot_dashed"/>
+							<isee:series_style color="#0CA0FF" thickness="1" pen_style="dotted"/>
+							<isee:series_style color="lime" thickness="1" pen_style="dashed"/>
+							<isee:series_style color="#FF007F" thickness="1"/>
+							<isee:series_style color="aqua" thickness="1" pen_style="dot_dashed"/>
+							<isee:series_style color="#F586FF" thickness="1" pen_style="dotted"/>
+							<isee:series_style color="black" thickness="1" pen_style="dashed"/>
+							<isee:series_style color="#C8C8C8" thickness="1"/>
+						</isee:series_styles>
+					</graph>
+					<table color="black" background="#E0E0E0" text_align="right" font_size="12pt" orientation="vertical" wrap_text="false" isee:auto_fit="true" isee:use_alternate_row_colors="false" isee:unlimited_table_length="false" blank_column_width="80" column_width="160" interval="1" report_balances="ending" report_flows="summed" header_font_style="normal" header_font_weight="normal" header_text_decoration="none" header_text_align="center" header_vertical_text_align="center" header_font_color="black" header_font_family="Arial" header_font_size="12pt" header_text_padding="2" header_text_border_color="black" header_text_border_width="thin" header_text_border_style="none"/>
+				</style>
+				<stock label_side="top" x="629.25" y="108.497" name="Traders expected price"/>
+				<flow label_side="top" x="529.5" y="108.497" name="Change in traders expected price">
+					<pts>
+						<pt x="440.25" y="108.497"/>
+						<pt x="606.75" y="108.497"/>
+					</pts>
+				</flow>
+				<connector uid="1" polarity="-" isee:polarity_placement="outside" angle="229.914">
+					<from>Traders_expected_price</from>
+					<to>Change_in_traders_expected_price</to>
+				</connector>
+				<aux x="441.958" y="147.499" name="Time to adjust\ntraders expected price"/>
+				<connector uid="2" angle="50.4323">
+					<from>Time_to_adjust_traders_expected_price</from>
+					<to>Change_in_traders_expected_price</to>
+				</connector>
+				<aux label_side="right" x="483.333" y="411.833" name="Effect of demand\nsupply ratio on price"/>
+				<connector uid="3" polarity="+" isee:polarity_placement="outside" angle="103.709">
+					<from>Effect_of_demand_supply_ratio_on_price</from>
+					<to>Price</to>
+				</connector>
+				<aux x="547.5" y="353.5" name="Sensitivity of price\nto demand supply ratio"/>
+				<connector uid="4" angle="222.274">
+					<from>Sensitivity_of_price_to_demand_supply_ratio</from>
+					<to>Effect_of_demand_supply_ratio_on_price</to>
+				</connector>
+				<stock x="388.917" y="305.833" name="Global oil demand"/>
+				<stock label_side="top" x="962.913" y="450.084" name="Global oil supply"/>
+				<flow label_side="bottom" x="310.167" y="305.833" name="Change in global oil\ndemand">
+					<pts>
+						<pt x="241.917" y="305.833"/>
+						<pt x="366.417" y="305.833"/>
+					</pts>
+				</flow>
+				<flow x="886.122" y="453.417" name="Change in\nglobal oil supply">
+					<pts>
+						<pt x="819.83" y="453.417"/>
+						<pt x="940.413" y="453.417"/>
+					</pts>
+				</flow>
+				<aux label_side="bottom" x="709.25" y="511.75" name="Global demand\nto supply ratio"/>
+				<connector uid="5" font_size="10pt" polarity="+" isee:polarity_placement="outside" angle="183.497">
+					<from>Global_demand_to_supply_ratio</from>
+					<to>Effect_of_demand_supply_ratio_on_price</to>
+				</connector>
+				<isee:loop_indicator font_weight="bold" text="B5" orientation="clockwise" uid="6" x="558.916" y="113.499" width="32.0013" height="32.0013"/>
+				<isee:loop_indicator font_weight="bold" text="R1" orientation="clockwise" uid="7" x="538.5" y="144.084" width="30.832" height="30.832"/>
+				<aux x="624.334" y="212.291" name="Reference price"/>
+				<connector uid="8" polarity="-" isee:polarity_placement="outside" angle="237.588">
+					<from>Global_oil_supply</from>
+					<to>Global_demand_to_supply_ratio</to>
+				</connector>
+				<aux x="210.167" y="116.833" name="Effect of price on demand"/>
+				<aux x="530.916" y="182.833" width="28" height="28" name="Price"/>
+				<aux x="817.83" y="497.417" name="Time to adjust supply"/>
+				<connector uid="9" angle="352.235">
+					<from>Time_to_adjust_supply</from>
+					<to>Change_in_global_oil_supply</to>
+				</connector>
+				<aux x="336.497" y="371.5" name="Time to adjust demand"/>
+				<connector uid="10" angle="71.2587">
+					<from>Time_to_adjust_demand</from>
+					<to>Change_in_global_oil_demand</to>
+				</connector>
+				<connector uid="11" polarity="+" isee:polarity_placement="outside" angle="152.211">
+					<from>Price</from>
+					<to>Change_in_traders_expected_price</to>
+				</connector>
+				<aux x="280.917" y="205.583" name="Expected demand"/>
+				<aux x="827.497" y="374" name="Expected supply"/>
+				<connector uid="12" angle="269.17">
+					<from>Effect_of_price_on_demand</from>
+					<to>Expected_demand</to>
+				</connector>
+				<connector uid="13" angle="257.654">
+					<from>Expected_demand</from>
+					<to>Change_in_global_oil_demand</to>
+				</connector>
+				<connector uid="14" angle="322.179">
+					<from>Expected_supply</from>
+					<to>Change_in_global_oil_supply</to>
+				</connector>
+				<aux x="441.958" y="230.291" name="Reference demand"/>
+				<aux label_side="right" label_angle="45" x="753.587" y="129.499" name="Effect of oil price change on\nNon OPEC oil supply"/>
+				<aux label_side="bottom" x="875.667" y="248.291" name="OPEC supply"/>
+				<aux x="784.327" y="262.749" name="Reference\nOPEC supply"/>
+				<connector uid="15" angle="24.9048">
+					<from>Reference_OPEC_supply</from>
+					<to>OPEC_supply</to>
+				</connector>
+				<aux x="1001.42" y="280.749" name="Non OPEC supply"/>
+				<aux x="1039.66" y="230.291" name="Reference\nNon OPEC\nsupply"/>
+				<aux label_side="bottom" x="700.917" y="202.666" name="Effect of price\non\nOPEC oil supply"/>
+				<isee:loop_indicator font_weight="bold" text="B1" orientation="clockwise" uid="16" x="938.167" y="250" width="36.1667" height="36.1667"/>
+				<connector uid="17" polarity="+" isee:polarity_placement="outside" angle="280.389">
+					<from>Global_oil_demand</from>
+					<to>Global_demand_to_supply_ratio</to>
+				</connector>
+				<connector uid="18" angle="6.17018">
+					<from>Effect_of_price_on_OPEC_oil_supply</from>
+					<to>OPEC_supply</to>
+				</connector>
+				<connector uid="19" angle="358.255">
+					<from>Effect_of_oil_price_change_on_Non_OPEC_oil_supply</from>
+					<to>Non_OPEC_supply</to>
+				</connector>
+				<connector uid="20" angle="83.8534">
+					<from>Global_oil_demand</from>
+					<to>Expected_demand</to>
+				</connector>
+				<connector uid="21" angle="148.891">
+					<from>Global_oil_demand</from>
+					<to>Change_in_global_oil_demand</to>
+				</connector>
+				<connector uid="22" angle="178.136">
+					<from>Reference_Non_OPEC_supply</from>
+					<to>Non_OPEC_supply</to>
+				</connector>
+				<connector uid="23" angle="146.903">
+					<from>Global_oil_supply</from>
+					<to>Change_in_global_oil_supply</to>
+				</connector>
+				<connector uid="24" angle="322.087">
+					<from>OPEC_supply</from>
+					<to>Expected_supply</to>
+				</connector>
+				<connector uid="25" angle="254.229">
+					<from>Non_OPEC_supply</from>
+					<to>Expected_supply</to>
+				</connector>
+				<aux x="956.25" y="383.084" name="Reference supply"/>
+				<connector uid="26" angle="7.16341">
+					<from>Reference_price</from>
+					<to>Effect_of_price_on_OPEC_oil_supply</to>
+				</connector>
+				<connector uid="27" angle="130.494">
+					<from>
+						<alias uid="28"/>
+					</from>
+					<to>Effect_of_oil_price_change_on_Non_OPEC_oil_supply</to>
+				</connector>
+				<connector uid="29" angle="36.5584">
+					<from>Traders_expected_price</from>
+					<to>Effect_of_oil_price_change_on_Non_OPEC_oil_supply</to>
+				</connector>
+				<connector uid="30" angle="14.3698">
+					<from>Traders_expected_price</from>
+					<to>Effect_of_price_on_OPEC_oil_supply</to>
+				</connector>
+				<connector uid="31" angle="162.561">
+					<from>Traders_expected_price</from>
+					<to>Effect_of_price_on_demand</to>
+				</connector>
+				<connector uid="32" angle="265.477">
+					<from>Traders_expected_price</from>
+					<to>Price</to>
+				</connector>
+				<connector uid="33" angle="167.471">
+					<from>
+						<alias uid="34"/>
+					</from>
+					<to>Effect_of_price_on_demand</to>
+				</connector>
+				<isee:loop_indicator font_weight="bold" text="B4" orientation="clockwise" uid="35" x="367.173" y="92.3333" width="32.3266" height="32.3266"/>
+				<stacked_container uid="36" x="2363.67" y="2121.5" width="541.337" height="390.167">
+					<graph font_weight="bold" font_size="16pt" axis_title_font_weight="bold" axis_title_font_size="16pt" axis_label_font_weight="bold" axis_label_font_size="16pt" width="541.337" height="390.167" type="time_series" show_grid="false" isee:tick_type="none" include_units_in_legend="false" plot_numbers="false" isee:label_pie_slices="false" isee:show_pie_borders="true" num_x_grid_lines="0" num_y_grid_lines="0" num_x_labels="5" num_y_labels="3" title="Graph of Global Supply and Demand" isee:fill_intensity="0.1" left_axis_multi_scale="false" left_axis_auto_scale="true" left_include_units="true" right_axis_multi_scale="false" right_axis_auto_scale="true" right_include_units="true">
+						<plot color="blue" isee:keep_zero_visible="false" pen_width="3" index="0" show_y_axis="true">
+							<entity name="Global_oil_demand"/>
+						</plot>
+						<plot color="red" pen_style="dotted" isee:keep_zero_visible="false" pen_width="3" index="1" show_y_axis="true">
+							<entity name="Global_oil_supply"/>
+						</plot>
+					</graph>
+				</stacked_container>
+				<stacked_container uid="37" x="1835.42" y="1933.83" width="583.333" height="378.834">
+					<graph font_weight="bold" font_size="16pt" axis_title_font_weight="bold" axis_title_font_size="16pt" axis_label_font_weight="bold" axis_label_font_size="16pt" width="583.333" height="378.834" type="time_series" show_grid="false" isee:tick_type="none" include_units_in_legend="false" plot_numbers="false" isee:label_pie_slices="false" isee:show_pie_borders="true" num_x_grid_lines="0" num_y_grid_lines="0" num_x_labels="5" num_y_labels="3" title="Graph of OPEC and Non-OPEC Supply" isee:fill_intensity="0.1" left_axis_multi_scale="false" left_axis_auto_scale="true" left_include_units="true" right_axis_multi_scale="false" right_axis_auto_scale="true" right_include_units="true">
+						<plot color="blue" isee:keep_zero_visible="false" pen_width="3" index="0" show_y_axis="true">
+							<entity name="Non_OPEC_supply"/>
+						</plot>
+						<plot color="red" pen_style="dot_dashed" isee:keep_zero_visible="false" pen_width="3" index="1" show_y_axis="true">
+							<entity name="OPEC_supply"/>
+						</plot>
+					</graph>
+				</stacked_container>
+				<isee:loop_indicator font_weight="bold" text="B2" orientation="clockwise" uid="38" x="833.497" y="303.25" width="36.1667" height="36.1667"/>
+				<aux x="145.834" y="149.333" name="Demand elasticity"/>
+				<connector uid="39" angle="91.5911">
+					<from>Demand_elasticity</from>
+					<to>Effect_of_price_on_demand</to>
+				</connector>
+				<alias font_style="italic" uid="28" x="775.327" y="156.499" width="18" height="18">
+					<of>Reference_price</of>
+				</alias>
+				<alias font_style="italic" uid="34" x="227.667" y="54.833" width="18" height="18">
+					<of>Reference_price</of>
+				</alias>
+			</view>
+			<view background="white" page_width="1066" page_height="600" isee:scroll_x="436.25" isee:scroll_y="292.5" zoom="80" home_view="true" type="interface">
+				<style>
+					<isee:stacked_container text_align="left" vertical_text_align="top" font_size="12pt" padding="6 8" border_color="#999999" border_width="thin" border_style="solid" item_spacing="0" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD" transparent_bg="false"/>
+				</style>
+				<text_box x="260.5" y="206" width="582" height="252.5">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Arial&apos;; font-size:48pt; font-weight:600; color:#000000;&quot;&gt;Oil Price Dynamics&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</text_box>
+				<button label="Start Exploring" isee:tooltip="" x="855.5" y="462.5" width="166.5" height="75">
+					<actions>
+						<action target="next_page">navigate</action>
+					</actions>
+				</button>
+			</view>
+			<view isee:name="Experimentation" background="white" page_width="1066" page_height="600" isee:scroll_y="142.5" zoom="80" type="interface">
+				<style>
+					<isee:stacked_container text_align="left" vertical_text_align="top" font_size="12pt" padding="6 8" border_color="#999999" border_width="thin" border_style="solid" item_spacing="0" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD" transparent_bg="false"/>
+				</style>
+				<button label="" isee:tooltip="" x="136.667" y="509.333">
+					<actions>
+						<action>start</action>
+					</actions>
+				</button>
+				<stacked_container x="374" y="30" width="598.333" height="405">
+					<graph width="598.333" height="405" type="time_series" show_grid="false" isee:tick_type="none" include_units_in_legend="false" plot_numbers="false" isee:label_pie_slices="false" isee:show_pie_borders="true" num_x_grid_lines="0" num_y_grid_lines="0" num_x_labels="5" num_y_labels="3" isee:fill_intensity="0.1" left_axis_multi_scale="false" left_axis_auto_scale="true" left_include_units="true" right_axis_multi_scale="false" right_axis_auto_scale="true" right_include_units="true">
+						<plot color="blue" title="Baseline" isee:keep_zero_visible="false" pen_width="1" index="0" show_y_axis="true">
+							<entity name="Price"/>
+							<isee:data name="Baseline"/>
+						</plot>
+						<plot color="red" pen_style="dot_dashed" title="Price" isee:keep_zero_visible="false" pen_width="1" index="1" show_y_axis="true">
+							<entity name="Price"/>
+						</plot>
+					</graph>
+				</stacked_container>
+				<slider color="#0075FF" x="172.667" y="60.5" increment="500" min="0" max="4000" isee:navigate_to="false" show_name="true">
+					<entity name="Reference_demand"/>
+					<reset_to after="never">0</reset_to>
+				</slider>
+				<slider color="#0075FF" x="178.333" y="149.333" increment="500" min="0" max="4000" isee:navigate_to="false" show_name="true">
+					<entity name="Reference_OPEC_supply"/>
+					<reset_to after="never">0</reset_to>
+				</slider>
+				<slider color="#0075FF" x="186.667" y="241.667" increment="500" min="0" max="4000" isee:navigate_to="false" show_name="true">
+					<entity name="Reference_Non_OPEC_supply"/>
+					<reset_to after="never">0</reset_to>
+				</slider>
+				<button label="" isee:tooltip="" x="216.667" y="509.333">
+					<actions>
+						<action>restore_all</action>
+					</actions>
+				</button>
+				<graphical_input x="84.1667" y="285" width="205" height="193.333" isee:navigate_to="false" show_name="true" isee:fill_intensity="0" isee:series_color="black" isee:input_precision="0" isee:x_axis_title="" isee:y_axis_title="">
+					<entity name="Effect_of_oil_price_change_on_Non_OPEC_oil_supply"/>
+					<reset_to after="never">0</reset_to>
+				</graphical_input>
+				<button label="Explore Structure" isee:tooltip="" x="451.333" y="467.667" width="377.333" height="58.3333">
+					<actions>
+						<action>restore_all</action>
+						<action target="home_page">navigate</action>
+					</actions>
+				</button>
+			</view>
+			<isee:templates>
+				<view background="white" page_width="1066" page_height="600" type="template">
+					<style>
+						<isee:stacked_container text_align="left" vertical_text_align="top" font_size="12pt" padding="6 8" border_color="#999999" border_width="thin" border_style="solid" item_spacing="0" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD" transparent_bg="false"/>
+					</style>
+					<button label="" isee:tooltip="" x="367.667" y="565">
+						<actions>
+							<action>start</action>
+						</actions>
+					</button>
+					<stacked_container x="12.5" y="398.5" width="293.333" height="195">
+						<graph width="293.333" height="195" type="time_series" show_grid="false" isee:tick_type="none" include_units_in_legend="false" plot_numbers="false" isee:label_pie_slices="false" isee:show_pie_borders="true" num_x_grid_lines="0" num_y_grid_lines="0" num_x_labels="5" num_y_labels="3" isee:fill_intensity="0.1" left_axis_multi_scale="false" left_axis_auto_scale="true" left_include_units="true" right_axis_multi_scale="false" right_axis_auto_scale="true" right_include_units="true">
+							<plot color="blue" title="Baseline" isee:keep_zero_visible="false" pen_width="1" index="0" show_y_axis="true">
+								<entity name="Price"/>
+								<isee:data name="Baseline"/>
+							</plot>
+							<plot color="red" pen_style="dot_dashed" title="Price" isee:keep_zero_visible="false" pen_width="1" index="1" show_y_axis="true">
+								<entity name="Price"/>
+							</plot>
+						</graph>
+					</stacked_container>
+				</view>
+			</isee:templates>
+			<isee:stories>
+				<isee:story uid="52" name="Story ">
+					<view isee:name="Story  - Page" background="white" page_width="1066" page_height="600" isee:scroll_x="243.75" isee:scroll_y="292.5" zoom="80" type="interface">
+						<style>
+							<isee:stacked_container text_align="left" vertical_text_align="top" font_size="12pt" padding="6 8" border_color="#999999" border_width="thin" border_style="solid" item_spacing="0" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD" transparent_bg="false"/>
+						</style>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="533" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<entity name="Traders_expected_price"/>
+							</isee:visible_list>
+							<isee:highlight_list/>
+						</isee:model_view>
+					</view>
+					<view background="white" page_width="1066" page_height="600" zoom="80" type="interface">
+						<style>
+							<isee:stacked_container text_align="left" vertical_text_align="top" font_size="12pt" padding="6 8" border_color="#999999" border_width="thin" border_style="solid" item_spacing="0" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD" transparent_bg="false"/>
+						</style>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="533" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<entity name="Traders_expected_price"/>
+								<entity name="Effect_of_price_on_demand"/>
+								<item uid="31"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<entity name="Effect_of_price_on_demand"/>
+								<item uid="31"/>
+							</isee:highlight_list>
+						</isee:model_view>
+					</view>
+					<view background="white" page_width="1066" page_height="600" zoom="80" type="interface">
+						<style>
+							<isee:stacked_container text_align="left" vertical_text_align="top" font_size="12pt" padding="6 8" border_color="#999999" border_width="thin" border_style="solid" item_spacing="0" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD" transparent_bg="false"/>
+						</style>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="533" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<item uid="31"/>
+								<item uid="34"/>
+								<entity name="Traders_expected_price"/>
+								<entity name="Demand_elasticity"/>
+								<entity name="Effect_of_price_on_demand"/>
+								<item uid="33"/>
+								<item uid="39"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<item uid="33"/>
+								<item uid="39"/>
+								<item uid="34"/>
+								<entity name="Demand_elasticity"/>
+							</isee:highlight_list>
+						</isee:model_view>
+					</view>
+					<view background="white" page_width="1066" page_height="600" zoom="80" type="interface">
+						<style>
+							<isee:stacked_container text_align="left" vertical_text_align="top" font_size="12pt" padding="6 8" border_color="#999999" border_width="thin" border_style="solid" item_spacing="0" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD" transparent_bg="false"/>
+						</style>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="533" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<item uid="31"/>
+								<item uid="34"/>
+								<entity name="Traders_expected_price"/>
+								<entity name="Demand_elasticity"/>
+								<entity name="Effect_of_price_on_demand"/>
+								<item uid="12"/>
+								<item uid="33"/>
+								<item uid="39"/>
+								<entity name="Expected_demand"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<item uid="12"/>
+								<entity name="Expected_demand"/>
+							</isee:highlight_list>
+						</isee:model_view>
+					</view>
+					<view background="white" page_width="1066" page_height="600" zoom="40" type="interface">
+						<style>
+							<isee:stacked_container text_align="left" vertical_text_align="top" font_size="12pt" padding="6 8" border_color="#999999" border_width="thin" border_style="solid" item_spacing="0" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD" transparent_bg="false"/>
+						</style>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="533" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<entity name="Traders_expected_price"/>
+								<entity name="Global_oil_demand"/>
+								<item uid="34"/>
+								<item uid="31"/>
+								<entity name="Effect_of_price_on_demand"/>
+								<entity name="Demand_elasticity"/>
+								<item uid="12"/>
+								<item uid="33"/>
+								<entity name="Expected_demand"/>
+								<item uid="39"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<entity name="Global_oil_demand"/>
+							</isee:highlight_list>
+						</isee:model_view>
+					</view>
+					<view background="white" page_width="1066" page_height="600" zoom="40" type="interface">
+						<style>
+							<isee:stacked_container text_align="left" vertical_text_align="top" font_size="12pt" padding="6 8" border_color="#999999" border_width="thin" border_style="solid" item_spacing="0" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD" transparent_bg="false"/>
+						</style>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="533" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<entity name="Global_oil_demand"/>
+								<item uid="12"/>
+								<item uid="33"/>
+								<item uid="13"/>
+								<item uid="21"/>
+								<entity name="Effect_of_price_on_demand"/>
+								<entity name="Demand_elasticity"/>
+								<item uid="39"/>
+								<entity name="Expected_demand"/>
+								<item uid="31"/>
+								<item uid="34"/>
+								<entity name="Traders_expected_price"/>
+								<entity name="Change_in_global_oil_demand"/>
+								<item uid="20"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<entity name="Change_in_global_oil_demand"/>
+								<item uid="13"/>
+								<item uid="21"/>
+								<item uid="20"/>
+							</isee:highlight_list>
+						</isee:model_view>
+					</view>
+					<view background="white" page_width="1066" page_height="600" type="interface">
+						<style>
+							<isee:stacked_container text_align="left" vertical_text_align="top" font_size="12pt" padding="6 8" border_color="#999999" border_width="thin" border_style="solid" item_spacing="0" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD" transparent_bg="false"/>
+						</style>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="533" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<item uid="10"/>
+								<entity name="Global_oil_demand"/>
+								<entity name="Reference_demand"/>
+								<entity name="Time_to_adjust_demand"/>
+								<item uid="12"/>
+								<item uid="33"/>
+								<item uid="39"/>
+								<entity name="Expected_demand"/>
+								<entity name="Traders_expected_price"/>
+								<entity name="Change_in_global_oil_demand"/>
+								<item uid="31"/>
+								<item uid="34"/>
+								<entity name="Effect_of_price_on_demand"/>
+								<entity name="Demand_elasticity"/>
+								<item uid="21"/>
+								<item uid="13"/>
+								<item uid="20"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<entity name="Time_to_adjust_demand"/>
+								<item uid="10"/>
+								<entity name="Reference_demand"/>
+							</isee:highlight_list>
+						</isee:model_view>
+					</view>
+					<view background="white" page_width="1066" page_height="600" zoom="40" type="interface">
+						<style>
+							<isee:stacked_container text_align="left" vertical_text_align="top" font_size="12pt" padding="6 8" border_color="#999999" border_width="thin" border_style="solid" item_spacing="0" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD" transparent_bg="false"/>
+						</style>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="533" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<entity name="Effect_of_price_on_demand"/>
+								<entity name="Traders_expected_price"/>
+								<entity name="Reference_demand"/>
+								<item uid="13"/>
+								<entity name="Global_demand_to_supply_ratio"/>
+								<item uid="17"/>
+								<entity name="Expected_demand"/>
+								<item uid="39"/>
+								<entity name="Demand_elasticity"/>
+								<item uid="21"/>
+								<item uid="34"/>
+								<item uid="31"/>
+								<entity name="Global_oil_demand"/>
+								<item uid="10"/>
+								<item uid="33"/>
+								<entity name="Time_to_adjust_demand"/>
+								<item uid="12"/>
+								<entity name="Change_in_global_oil_demand"/>
+								<item uid="20"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<entity name="Global_demand_to_supply_ratio"/>
+								<item uid="17"/>
+							</isee:highlight_list>
+						</isee:model_view>
+					</view>
+					<view background="white" page_width="1066" page_height="600" zoom="40" type="interface">
+						<style>
+							<isee:stacked_container text_align="left" vertical_text_align="top" font_size="12pt" padding="6 8" border_color="#999999" border_width="thin" border_style="solid" item_spacing="0" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD" transparent_bg="false"/>
+						</style>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="533" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<item uid="33"/>
+								<entity name="Global_oil_demand"/>
+								<item uid="10"/>
+								<entity name="Effect_of_price_on_demand"/>
+								<entity name="Traders_expected_price"/>
+								<entity name="Change_in_global_oil_demand"/>
+								<item uid="21"/>
+								<entity name="Demand_elasticity"/>
+								<item uid="12"/>
+								<entity name="Time_to_adjust_demand"/>
+								<item uid="4"/>
+								<entity name="Sensitivity_of_price_to_demand_supply_ratio"/>
+								<item uid="34"/>
+								<item uid="31"/>
+								<item uid="20"/>
+								<entity name="Reference_demand"/>
+								<entity name="Global_demand_to_supply_ratio"/>
+								<item uid="17"/>
+								<item uid="13"/>
+								<entity name="Effect_of_demand_supply_ratio_on_price"/>
+								<item uid="39"/>
+								<entity name="Expected_demand"/>
+								<item uid="5"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<item uid="5"/>
+								<entity name="Effect_of_demand_supply_ratio_on_price"/>
+								<entity name="Sensitivity_of_price_to_demand_supply_ratio"/>
+								<item uid="4"/>
+							</isee:highlight_list>
+						</isee:model_view>
+					</view>
+					<view background="white" page_width="1066" page_height="600" zoom="40" type="interface">
+						<style>
+							<isee:stacked_container text_align="left" vertical_text_align="top" font_size="12pt" padding="6 8" border_color="#999999" border_width="thin" border_style="solid" item_spacing="0" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD" transparent_bg="false"/>
+						</style>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="533" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<entity name="Traders_expected_price"/>
+								<entity name="Effect_of_price_on_demand"/>
+								<item uid="31"/>
+								<item uid="34"/>
+								<entity name="Reference_demand"/>
+								<entity name="Sensitivity_of_price_to_demand_supply_ratio"/>
+								<item uid="4"/>
+								<entity name="Global_oil_demand"/>
+								<entity name="Demand_elasticity"/>
+								<item uid="21"/>
+								<entity name="Change_in_global_oil_demand"/>
+								<item uid="10"/>
+								<item uid="3"/>
+								<item uid="20"/>
+								<entity name="Price"/>
+								<item uid="12"/>
+								<entity name="Time_to_adjust_demand"/>
+								<item uid="33"/>
+								<item uid="13"/>
+								<entity name="Effect_of_demand_supply_ratio_on_price"/>
+								<item uid="17"/>
+								<entity name="Global_demand_to_supply_ratio"/>
+								<item uid="39"/>
+								<entity name="Expected_demand"/>
+								<item uid="5"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<item uid="3"/>
+								<entity name="Price"/>
+							</isee:highlight_list>
+						</isee:model_view>
+					</view>
+					<view background="white" page_width="1066" page_height="600" zoom="40" type="interface">
+						<style>
+							<isee:stacked_container text_align="left" vertical_text_align="top" font_size="12pt" padding="6 8" border_color="#999999" border_width="thin" border_style="solid" item_spacing="0" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD" transparent_bg="false"/>
+						</style>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="533" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<item uid="3"/>
+								<item uid="11"/>
+								<item uid="5"/>
+								<item uid="34"/>
+								<item uid="31"/>
+								<entity name="Sensitivity_of_price_to_demand_supply_ratio"/>
+								<item uid="10"/>
+								<entity name="Global_oil_demand"/>
+								<entity name="Effect_of_price_on_demand"/>
+								<entity name="Demand_elasticity"/>
+								<item uid="21"/>
+								<entity name="Traders_expected_price"/>
+								<entity name="Change_in_global_oil_demand"/>
+								<item uid="4"/>
+								<entity name="Change_in_traders_expected_price"/>
+								<item uid="20"/>
+								<item uid="33"/>
+								<item uid="12"/>
+								<entity name="Price"/>
+								<entity name="Time_to_adjust_demand"/>
+								<entity name="Global_demand_to_supply_ratio"/>
+								<item uid="17"/>
+								<entity name="Effect_of_demand_supply_ratio_on_price"/>
+								<item uid="13"/>
+								<item uid="35"/>
+								<entity name="Reference_demand"/>
+								<item uid="39"/>
+								<entity name="Expected_demand"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<item uid="11"/>
+								<entity name="Change_in_traders_expected_price"/>
+								<item uid="35"/>
+							</isee:highlight_list>
+						</isee:model_view>
+					</view>
+					<view background="white" page_width="1066" page_height="600" zoom="40" type="interface">
+						<style>
+							<isee:stacked_container text_align="left" vertical_text_align="top" font_size="12pt" padding="6 8" border_color="#999999" border_width="thin" border_style="solid" item_spacing="0" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD" transparent_bg="false"/>
+						</style>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="533" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<entity name="Effect_of_price_on_demand"/>
+								<entity name="Traders_expected_price"/>
+								<item uid="3"/>
+								<entity name="Global_oil_demand"/>
+								<entity name="Demand_elasticity"/>
+								<item uid="21"/>
+								<item uid="33"/>
+								<item uid="32"/>
+								<item uid="13"/>
+								<entity name="Effect_of_demand_supply_ratio_on_price"/>
+								<entity name="Global_demand_to_supply_ratio"/>
+								<item uid="17"/>
+								<entity name="Time_to_adjust_demand"/>
+								<item uid="12"/>
+								<entity name="Price"/>
+								<item uid="2"/>
+								<entity name="Reference_demand"/>
+								<item uid="35"/>
+								<item uid="10"/>
+								<item uid="7"/>
+								<entity name="Change_in_global_oil_demand"/>
+								<entity name="Sensitivity_of_price_to_demand_supply_ratio"/>
+								<item uid="4"/>
+								<item uid="31"/>
+								<item uid="34"/>
+								<entity name="Change_in_traders_expected_price"/>
+								<item uid="20"/>
+								<entity name="Time_to_adjust_traders_expected_price"/>
+								<entity name="Expected_demand"/>
+								<item uid="39"/>
+								<item uid="5"/>
+								<item uid="11"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<item uid="32"/>
+								<entity name="Time_to_adjust_traders_expected_price"/>
+								<item uid="7"/>
+								<item uid="2"/>
+							</isee:highlight_list>
+						</isee:model_view>
+					</view>
+					<view background="white" page_width="1066" page_height="600" zoom="40" type="interface">
+						<style>
+							<isee:stacked_container text_align="left" vertical_text_align="top" font_size="12pt" padding="6 8" border_color="#999999" border_width="thin" border_style="solid" item_spacing="0" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD" transparent_bg="false"/>
+						</style>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="533" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<item uid="1"/>
+								<entity name="Global_oil_demand"/>
+								<item uid="4"/>
+								<item uid="10"/>
+								<entity name="Sensitivity_of_price_to_demand_supply_ratio"/>
+								<item uid="33"/>
+								<item uid="32"/>
+								<entity name="Expected_demand"/>
+								<item uid="39"/>
+								<item uid="31"/>
+								<item uid="34"/>
+								<entity name="Demand_elasticity"/>
+								<item uid="21"/>
+								<item uid="3"/>
+								<entity name="Effect_of_price_on_demand"/>
+								<item uid="35"/>
+								<entity name="Reference_demand"/>
+								<item uid="2"/>
+								<entity name="Traders_expected_price"/>
+								<item uid="7"/>
+								<entity name="Change_in_global_oil_demand"/>
+								<entity name="Time_to_adjust_traders_expected_price"/>
+								<item uid="20"/>
+								<entity name="Change_in_traders_expected_price"/>
+								<item uid="17"/>
+								<entity name="Global_demand_to_supply_ratio"/>
+								<item uid="13"/>
+								<entity name="Effect_of_demand_supply_ratio_on_price"/>
+								<item uid="12"/>
+								<entity name="Price"/>
+								<entity name="Time_to_adjust_demand"/>
+								<item uid="11"/>
+								<item uid="6"/>
+								<item uid="5"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<item uid="1"/>
+								<item uid="6"/>
+							</isee:highlight_list>
+						</isee:model_view>
+					</view>
+					<view background="white" page_width="1066" page_height="600" zoom="40" type="interface">
+						<style>
+							<isee:stacked_container text_align="left" vertical_text_align="top" font_size="12pt" padding="6 8" border_color="#999999" border_width="thin" border_style="solid" item_spacing="0" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD" transparent_bg="false"/>
+						</style>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="700" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<entity name="Traders_expected_price"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<entity name="Traders_expected_price"/>
+							</isee:highlight_list>
+						</isee:model_view>
+					</view>
+					<view background="white" page_width="1066" page_height="600" zoom="40" type="interface">
+						<style>
+							<isee:stacked_container text_align="left" vertical_text_align="top" font_size="12pt" padding="6 8" border_color="#999999" border_width="thin" border_style="solid" item_spacing="0" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD" transparent_bg="false"/>
+						</style>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="700" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<entity name="Traders_expected_price"/>
+								<entity name="Effect_of_oil_price_change_on_Non_OPEC_oil_supply"/>
+								<item uid="29"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<entity name="Effect_of_oil_price_change_on_Non_OPEC_oil_supply"/>
+								<item uid="29"/>
+							</isee:highlight_list>
+						</isee:model_view>
+					</view>
+					<view background="white" page_width="1066" page_height="600" zoom="40" type="interface">
+						<style>
+							<isee:stacked_container text_align="left" vertical_text_align="top" font_size="12pt" padding="6 8" border_color="#999999" border_width="thin" border_style="solid" item_spacing="0" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD" transparent_bg="false"/>
+						</style>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="700" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<entity name="Effect_of_oil_price_change_on_Non_OPEC_oil_supply"/>
+								<item uid="28"/>
+								<item uid="27"/>
+								<item uid="29"/>
+								<entity name="Traders_expected_price"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<item uid="28"/>
+								<item uid="27"/>
+							</isee:highlight_list>
+						</isee:model_view>
+					</view>
+					<view background="white" page_width="1066" page_height="600" zoom="40" type="interface">
+						<style>
+							<isee:stacked_container text_align="left" vertical_text_align="top" font_size="12pt" padding="6 8" border_color="#999999" border_width="thin" border_style="solid" item_spacing="0" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD" transparent_bg="false"/>
+						</style>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="700" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<entity name="Traders_expected_price"/>
+								<item uid="28"/>
+								<item uid="27"/>
+								<item uid="29"/>
+								<item uid="30"/>
+								<entity name="Effect_of_oil_price_change_on_Non_OPEC_oil_supply"/>
+								<entity name="Effect_of_price_on_OPEC_oil_supply"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<item uid="30"/>
+								<entity name="Effect_of_price_on_OPEC_oil_supply"/>
+							</isee:highlight_list>
+						</isee:model_view>
+					</view>
+					<view background="white" page_width="1066" page_height="600" zoom="40" type="interface">
+						<style>
+							<isee:stacked_container text_align="left" vertical_text_align="top" font_size="12pt" padding="6 8" border_color="#999999" border_width="thin" border_style="solid" item_spacing="0" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD" transparent_bg="false"/>
+						</style>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="700" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<item uid="30"/>
+								<item uid="29"/>
+								<entity name="Effect_of_oil_price_change_on_Non_OPEC_oil_supply"/>
+								<item uid="28"/>
+								<item uid="27"/>
+								<entity name="Reference_price"/>
+								<item uid="26"/>
+								<entity name="Traders_expected_price"/>
+								<entity name="Effect_of_price_on_OPEC_oil_supply"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<entity name="Reference_price"/>
+								<item uid="26"/>
+							</isee:highlight_list>
+						</isee:model_view>
+					</view>
+					<view background="white" page_width="1066" page_height="600" zoom="40" type="interface">
+						<style>
+							<isee:stacked_container text_align="left" vertical_text_align="top" font_size="12pt" padding="6 8" border_color="#999999" border_width="thin" border_style="solid" item_spacing="0" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD" transparent_bg="false"/>
+						</style>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="700" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<item uid="27"/>
+								<item uid="29"/>
+								<item uid="30"/>
+								<item uid="28"/>
+								<item uid="18"/>
+								<entity name="Reference_price"/>
+								<entity name="Traders_expected_price"/>
+								<item uid="26"/>
+								<entity name="Effect_of_oil_price_change_on_Non_OPEC_oil_supply"/>
+								<entity name="Effect_of_price_on_OPEC_oil_supply"/>
+								<entity name="OPEC_supply"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<item uid="18"/>
+								<entity name="OPEC_supply"/>
+							</isee:highlight_list>
+						</isee:model_view>
+					</view>
+					<view background="white" page_width="1066" page_height="600" zoom="40" type="interface">
+						<style>
+							<isee:stacked_container text_align="left" vertical_text_align="top" font_size="12pt" padding="6 8" border_color="#999999" border_width="thin" border_style="solid" item_spacing="0" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD" transparent_bg="false"/>
+						</style>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="700" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<item uid="29"/>
+								<entity name="Effect_of_oil_price_change_on_Non_OPEC_oil_supply"/>
+								<item uid="30"/>
+								<item uid="15"/>
+								<item uid="18"/>
+								<item uid="28"/>
+								<item uid="27"/>
+								<entity name="Reference_price"/>
+								<item uid="26"/>
+								<entity name="Reference_OPEC_supply"/>
+								<entity name="Traders_expected_price"/>
+								<entity name="Effect_of_price_on_OPEC_oil_supply"/>
+								<entity name="OPEC_supply"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<entity name="Reference_OPEC_supply"/>
+								<item uid="15"/>
+							</isee:highlight_list>
+						</isee:model_view>
+					</view>
+					<view background="white" page_width="1066" page_height="600" zoom="40" type="interface">
+						<style>
+							<isee:stacked_container text_align="left" vertical_text_align="top" font_size="12pt" padding="6 8" border_color="#999999" border_width="thin" border_style="solid" item_spacing="0" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD" transparent_bg="false"/>
+						</style>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="700" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<entity name="Effect_of_oil_price_change_on_Non_OPEC_oil_supply"/>
+								<item uid="27"/>
+								<item uid="19"/>
+								<entity name="Reference_price"/>
+								<item uid="29"/>
+								<item uid="15"/>
+								<item uid="30"/>
+								<item uid="28"/>
+								<item uid="18"/>
+								<item uid="26"/>
+								<entity name="Traders_expected_price"/>
+								<entity name="Reference_OPEC_supply"/>
+								<entity name="Non_OPEC_supply"/>
+								<entity name="OPEC_supply"/>
+								<entity name="Effect_of_price_on_OPEC_oil_supply"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<item uid="19"/>
+								<entity name="Non_OPEC_supply"/>
+							</isee:highlight_list>
+						</isee:model_view>
+					</view>
+					<view background="white" page_width="1066" page_height="600" zoom="40" type="interface">
+						<style>
+							<isee:stacked_container text_align="left" vertical_text_align="top" font_size="12pt" padding="6 8" border_color="#999999" border_width="thin" border_style="solid" item_spacing="0" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD" transparent_bg="false"/>
+						</style>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="700" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<entity name="Non_OPEC_supply"/>
+								<entity name="Effect_of_oil_price_change_on_Non_OPEC_oil_supply"/>
+								<item uid="15"/>
+								<item uid="30"/>
+								<item uid="22"/>
+								<item uid="29"/>
+								<item uid="28"/>
+								<item uid="18"/>
+								<item uid="27"/>
+								<item uid="19"/>
+								<entity name="Reference_Non_OPEC_supply"/>
+								<entity name="Reference_price"/>
+								<entity name="OPEC_supply"/>
+								<entity name="Effect_of_price_on_OPEC_oil_supply"/>
+								<entity name="Reference_OPEC_supply"/>
+								<item uid="26"/>
+								<entity name="Traders_expected_price"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<entity name="Reference_Non_OPEC_supply"/>
+								<item uid="22"/>
+							</isee:highlight_list>
+						</isee:model_view>
+					</view>
+					<view background="white" page_width="1066" page_height="600" zoom="40" type="interface">
+						<style>
+							<isee:stacked_container text_align="left" vertical_text_align="top" font_size="12pt" padding="6 8" border_color="#999999" border_width="thin" border_style="solid" item_spacing="0" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD" transparent_bg="false"/>
+						</style>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="700" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<entity name="Effect_of_oil_price_change_on_Non_OPEC_oil_supply"/>
+								<item uid="19"/>
+								<item uid="22"/>
+								<item uid="29"/>
+								<item uid="18"/>
+								<item uid="28"/>
+								<item uid="15"/>
+								<item uid="25"/>
+								<item uid="30"/>
+								<entity name="Non_OPEC_supply"/>
+								<entity name="Traders_expected_price"/>
+								<item uid="26"/>
+								<entity name="Reference_OPEC_supply"/>
+								<entity name="Expected_supply"/>
+								<item uid="27"/>
+								<entity name="OPEC_supply"/>
+								<entity name="Effect_of_price_on_OPEC_oil_supply"/>
+								<entity name="Reference_Non_OPEC_supply"/>
+								<item uid="24"/>
+								<entity name="Reference_price"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<entity name="Expected_supply"/>
+								<item uid="25"/>
+								<item uid="24"/>
+							</isee:highlight_list>
+						</isee:model_view>
+					</view>
+					<view background="white" page_width="1066" page_height="600" zoom="40" type="interface">
+						<style>
+							<isee:stacked_container text_align="left" vertical_text_align="top" font_size="12pt" padding="6 8" border_color="#999999" border_width="thin" border_style="solid" item_spacing="0" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD" transparent_bg="false"/>
+						</style>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="700" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<entity name="Non_OPEC_supply"/>
+								<entity name="OPEC_supply"/>
+								<entity name="Effect_of_oil_price_change_on_Non_OPEC_oil_supply"/>
+								<item uid="15"/>
+								<item uid="30"/>
+								<item uid="25"/>
+								<item uid="28"/>
+								<item uid="18"/>
+								<item uid="19"/>
+								<entity name="Expected_supply"/>
+								<item uid="27"/>
+								<entity name="Reference_price"/>
+								<item uid="24"/>
+								<entity name="Reference_Non_OPEC_supply"/>
+								<entity name="Reference_OPEC_supply"/>
+								<item uid="26"/>
+								<entity name="Traders_expected_price"/>
+								<entity name="Effect_of_price_on_OPEC_oil_supply"/>
+								<entity name="Global_oil_supply"/>
+								<item uid="22"/>
+								<item uid="29"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<entity name="Global_oil_supply"/>
+							</isee:highlight_list>
+						</isee:model_view>
+					</view>
+					<view background="white" page_width="1066" page_height="600" zoom="40" type="interface">
+						<style>
+							<isee:stacked_container text_align="left" vertical_text_align="top" font_size="12pt" padding="6 8" border_color="#999999" border_width="thin" border_style="solid" item_spacing="0" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD" transparent_bg="false"/>
+						</style>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="700" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<entity name="Reference_Non_OPEC_supply"/>
+								<item uid="19"/>
+								<item uid="22"/>
+								<item uid="29"/>
+								<item uid="28"/>
+								<item uid="18"/>
+								<entity name="Effect_of_oil_price_change_on_Non_OPEC_oil_supply"/>
+								<entity name="Non_OPEC_supply"/>
+								<item uid="15"/>
+								<entity name="Reference_supply"/>
+								<item uid="25"/>
+								<item uid="30"/>
+								<entity name="Traders_expected_price"/>
+								<item uid="26"/>
+								<entity name="Reference_OPEC_supply"/>
+								<item uid="27"/>
+								<entity name="Expected_supply"/>
+								<entity name="OPEC_supply"/>
+								<item uid="24"/>
+								<entity name="Reference_price"/>
+								<entity name="Global_oil_supply"/>
+								<entity name="Effect_of_price_on_OPEC_oil_supply"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<entity name="Reference_supply"/>
+							</isee:highlight_list>
+						</isee:model_view>
+					</view>
+					<view background="white" page_width="1066" page_height="600" zoom="40" type="interface">
+						<style>
+							<isee:stacked_container text_align="left" vertical_text_align="top" font_size="12pt" padding="6 8" border_color="#999999" border_width="thin" border_style="solid" item_spacing="0" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD" transparent_bg="false"/>
+						</style>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="700" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<entity name="Non_OPEC_supply"/>
+								<entity name="OPEC_supply"/>
+								<entity name="Effect_of_oil_price_change_on_Non_OPEC_oil_supply"/>
+								<entity name="Expected_supply"/>
+								<item uid="27"/>
+								<item uid="19"/>
+								<item uid="18"/>
+								<item uid="28"/>
+								<entity name="Reference_Non_OPEC_supply"/>
+								<item uid="24"/>
+								<entity name="Reference_price"/>
+								<entity name="Change_in_global_oil_supply"/>
+								<item uid="22"/>
+								<item uid="23"/>
+								<item uid="29"/>
+								<item uid="9"/>
+								<item uid="30"/>
+								<item uid="25"/>
+								<item uid="15"/>
+								<entity name="Reference_supply"/>
+								<entity name="Time_to_adjust_supply"/>
+								<entity name="Effect_of_price_on_OPEC_oil_supply"/>
+								<entity name="Global_oil_supply"/>
+								<entity name="Traders_expected_price"/>
+								<item uid="26"/>
+								<entity name="Reference_OPEC_supply"/>
+								<item uid="14"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<item uid="23"/>
+								<item uid="14"/>
+								<entity name="Time_to_adjust_supply"/>
+								<item uid="9"/>
+								<entity name="Change_in_global_oil_supply"/>
+							</isee:highlight_list>
+						</isee:model_view>
+					</view>
+					<view background="white" page_width="1066" page_height="600" zoom="40" type="interface">
+						<style>
+							<isee:stacked_container text_align="left" vertical_text_align="top" font_size="12pt" padding="6 8" border_color="#999999" border_width="thin" border_style="solid" item_spacing="0" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD" transparent_bg="false"/>
+						</style>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="700" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<item uid="29"/>
+								<entity name="Global_demand_to_supply_ratio"/>
+								<item uid="9"/>
+								<entity name="Time_to_adjust_supply"/>
+								<entity name="Traders_expected_price"/>
+								<item uid="22"/>
+								<entity name="OPEC_supply"/>
+								<entity name="Non_OPEC_supply"/>
+								<item uid="23"/>
+								<item uid="28"/>
+								<item uid="18"/>
+								<entity name="Effect_of_oil_price_change_on_Non_OPEC_oil_supply"/>
+								<item uid="15"/>
+								<entity name="Reference_supply"/>
+								<item uid="25"/>
+								<item uid="30"/>
+								<entity name="Expected_supply"/>
+								<item uid="27"/>
+								<item uid="8"/>
+								<item uid="19"/>
+								<item uid="14"/>
+								<item uid="26"/>
+								<entity name="Reference_OPEC_supply"/>
+								<entity name="Reference_Non_OPEC_supply"/>
+								<entity name="Reference_price"/>
+								<item uid="24"/>
+								<entity name="Change_in_global_oil_supply"/>
+								<entity name="Effect_of_price_on_OPEC_oil_supply"/>
+								<entity name="Global_oil_supply"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<entity name="Global_demand_to_supply_ratio"/>
+								<item uid="8"/>
+							</isee:highlight_list>
+						</isee:model_view>
+					</view>
+					<view background="white" page_width="1066" page_height="600" zoom="40" type="interface">
+						<style>
+							<isee:stacked_container text_align="left" vertical_text_align="top" font_size="12pt" padding="6 8" border_color="#999999" border_width="thin" border_style="solid" item_spacing="0" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD" transparent_bg="false"/>
+						</style>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="700" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<entity name="Reference_Non_OPEC_supply"/>
+								<entity name="Non_OPEC_supply"/>
+								<entity name="OPEC_supply"/>
+								<item uid="19"/>
+								<item uid="8"/>
+								<entity name="Expected_supply"/>
+								<item uid="27"/>
+								<item uid="18"/>
+								<item uid="28"/>
+								<entity name="Effect_of_oil_price_change_on_Non_OPEC_oil_supply"/>
+								<item uid="24"/>
+								<entity name="Change_in_global_oil_supply"/>
+								<entity name="Reference_price"/>
+								<item uid="22"/>
+								<item uid="5"/>
+								<item uid="23"/>
+								<entity name="Effect_of_demand_supply_ratio_on_price"/>
+								<entity name="Global_demand_to_supply_ratio"/>
+								<item uid="29"/>
+								<item uid="9"/>
+								<entity name="Effect_of_price_on_OPEC_oil_supply"/>
+								<entity name="Global_oil_supply"/>
+								<item uid="14"/>
+								<entity name="Reference_OPEC_supply"/>
+								<item uid="26"/>
+								<entity name="Traders_expected_price"/>
+								<item uid="30"/>
+								<item uid="25"/>
+								<entity name="Reference_supply"/>
+								<item uid="15"/>
+								<entity name="Time_to_adjust_supply"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<entity name="Effect_of_demand_supply_ratio_on_price"/>
+								<item uid="5"/>
+							</isee:highlight_list>
+						</isee:model_view>
+					</view>
+					<view background="white" page_width="1066" page_height="600" zoom="40" type="interface">
+						<style>
+							<isee:stacked_container text_align="left" vertical_text_align="top" font_size="12pt" padding="6 8" border_color="#999999" border_width="thin" border_style="solid" item_spacing="0" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD" transparent_bg="false"/>
+						</style>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="700" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<item uid="18"/>
+								<item uid="28"/>
+								<item uid="19"/>
+								<entity name="OPEC_supply"/>
+								<entity name="Expected_supply"/>
+								<item uid="27"/>
+								<item uid="8"/>
+								<entity name="Reference_Non_OPEC_supply"/>
+								<item uid="23"/>
+								<entity name="Effect_of_oil_price_change_on_Non_OPEC_oil_supply"/>
+								<entity name="Effect_of_demand_supply_ratio_on_price"/>
+								<entity name="Global_demand_to_supply_ratio"/>
+								<entity name="Time_to_adjust_supply"/>
+								<item uid="15"/>
+								<entity name="Reference_supply"/>
+								<item uid="30"/>
+								<item uid="25"/>
+								<entity name="Traders_expected_price"/>
+								<entity name="Reference_OPEC_supply"/>
+								<item uid="14"/>
+								<item uid="26"/>
+								<entity name="Non_OPEC_supply"/>
+								<item uid="5"/>
+								<item uid="9"/>
+								<item uid="4"/>
+								<item uid="29"/>
+								<entity name="Change_in_global_oil_supply"/>
+								<item uid="24"/>
+								<entity name="Reference_price"/>
+								<entity name="Effect_of_price_on_OPEC_oil_supply"/>
+								<entity name="Global_oil_supply"/>
+								<entity name="Sensitivity_of_price_to_demand_supply_ratio"/>
+								<item uid="22"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<entity name="Sensitivity_of_price_to_demand_supply_ratio"/>
+								<item uid="4"/>
+							</isee:highlight_list>
+						</isee:model_view>
+					</view>
+					<view background="white" page_width="1066" page_height="600" zoom="40" type="interface">
+						<style>
+							<isee:stacked_container text_align="left" vertical_text_align="top" font_size="12pt" padding="6 8" border_color="#999999" border_width="thin" border_style="solid" item_spacing="0" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD" transparent_bg="false"/>
+						</style>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="700" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<item uid="8"/>
+								<entity name="Non_OPEC_supply"/>
+								<entity name="OPEC_supply"/>
+								<item uid="3"/>
+								<item uid="23"/>
+								<entity name="Effect_of_oil_price_change_on_Non_OPEC_oil_supply"/>
+								<item uid="18"/>
+								<item uid="28"/>
+								<entity name="Effect_of_demand_supply_ratio_on_price"/>
+								<entity name="Global_demand_to_supply_ratio"/>
+								<item uid="5"/>
+								<item uid="9"/>
+								<item uid="4"/>
+								<item uid="29"/>
+								<entity name="Traders_expected_price"/>
+								<item uid="14"/>
+								<item uid="26"/>
+								<entity name="Reference_OPEC_supply"/>
+								<item uid="19"/>
+								<item uid="27"/>
+								<entity name="Expected_supply"/>
+								<entity name="Time_to_adjust_supply"/>
+								<item uid="25"/>
+								<entity name="Reference_supply"/>
+								<item uid="15"/>
+								<item uid="30"/>
+								<entity name="Reference_Non_OPEC_supply"/>
+								<entity name="Price"/>
+								<item uid="24"/>
+								<entity name="Reference_price"/>
+								<entity name="Change_in_global_oil_supply"/>
+								<entity name="Effect_of_price_on_OPEC_oil_supply"/>
+								<entity name="Global_oil_supply"/>
+								<entity name="Sensitivity_of_price_to_demand_supply_ratio"/>
+								<item uid="22"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<item uid="3"/>
+								<entity name="Price"/>
+							</isee:highlight_list>
+						</isee:model_view>
+					</view>
+					<view background="white" page_width="1066" page_height="600" zoom="40" type="interface">
+						<style>
+							<isee:stacked_container text_align="left" vertical_text_align="top" font_size="12pt" padding="6 8" border_color="#999999" border_width="thin" border_style="solid" item_spacing="0" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD" transparent_bg="false"/>
+						</style>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="700" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<entity name="Time_to_adjust_traders_expected_price"/>
+								<entity name="Global_oil_supply"/>
+								<item uid="18"/>
+								<item uid="3"/>
+								<entity name="OPEC_supply"/>
+								<entity name="Effect_of_price_on_OPEC_oil_supply"/>
+								<item uid="29"/>
+								<entity name="Change_in_traders_expected_price"/>
+								<entity name="Time_to_adjust_supply"/>
+								<entity name="Effect_of_oil_price_change_on_Non_OPEC_oil_supply"/>
+								<item uid="4"/>
+								<item uid="9"/>
+								<item uid="19"/>
+								<entity name="Expected_supply"/>
+								<item uid="27"/>
+								<item uid="8"/>
+								<item uid="28"/>
+								<item uid="16"/>
+								<entity name="Global_demand_to_supply_ratio"/>
+								<entity name="Effect_of_demand_supply_ratio_on_price"/>
+								<item uid="22"/>
+								<entity name="Price"/>
+								<entity name="Reference_Non_OPEC_supply"/>
+								<entity name="Change_in_global_oil_supply"/>
+								<entity name="Reference_price"/>
+								<item uid="24"/>
+								<entity name="Sensitivity_of_price_to_demand_supply_ratio"/>
+								<item uid="14"/>
+								<item uid="7"/>
+								<item uid="26"/>
+								<entity name="Reference_OPEC_supply"/>
+								<entity name="Traders_expected_price"/>
+								<item uid="5"/>
+								<item uid="11"/>
+								<item uid="23"/>
+								<item uid="38"/>
+								<entity name="Non_OPEC_supply"/>
+								<item uid="25"/>
+								<item uid="30"/>
+								<entity name="Reference_supply"/>
+								<item uid="15"/>
+								<item uid="2"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<item uid="11"/>
+								<item uid="38"/>
+								<item uid="7"/>
+								<item uid="16"/>
+								<item uid="2"/>
+								<entity name="Time_to_adjust_traders_expected_price"/>
+								<entity name="Change_in_traders_expected_price"/>
+							</isee:highlight_list>
+						</isee:model_view>
+					</view>
+					<view background="white" page_width="1066" page_height="600" zoom="40" type="interface">
+						<style>
+							<isee:stacked_container text_align="left" vertical_text_align="top" font_size="12pt" padding="6 8" border_color="#999999" border_width="thin" border_style="solid" item_spacing="0" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD" transparent_bg="false"/>
+						</style>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="700" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<item uid="19"/>
+								<entity name="Change_in_global_oil_supply"/>
+								<entity name="Global_oil_supply"/>
+								<item uid="2"/>
+								<item uid="1"/>
+								<item uid="22"/>
+								<item uid="25"/>
+								<entity name="Effect_of_oil_price_change_on_Non_OPEC_oil_supply"/>
+								<entity name="OPEC_supply"/>
+								<entity name="Effect_of_price_on_OPEC_oil_supply"/>
+								<entity name="Non_OPEC_supply"/>
+								<entity name="Time_to_adjust_traders_expected_price"/>
+								<entity name="Change_in_traders_expected_price"/>
+								<item uid="29"/>
+								<entity name="Sensitivity_of_price_to_demand_supply_ratio"/>
+								<entity name="Price"/>
+								<entity name="Reference_Non_OPEC_supply"/>
+								<entity name="Reference_price"/>
+								<item uid="24"/>
+								<item uid="9"/>
+								<item uid="4"/>
+								<entity name="Reference_OPEC_supply"/>
+								<item uid="7"/>
+								<item uid="26"/>
+								<item uid="14"/>
+								<entity name="Traders_expected_price"/>
+								<item uid="15"/>
+								<entity name="Reference_supply"/>
+								<item uid="30"/>
+								<entity name="Time_to_adjust_supply"/>
+								<item uid="16"/>
+								<entity name="Global_demand_to_supply_ratio"/>
+								<entity name="Effect_of_demand_supply_ratio_on_price"/>
+								<item uid="8"/>
+								<item uid="27"/>
+								<entity name="Expected_supply"/>
+								<item uid="38"/>
+								<item uid="23"/>
+								<item uid="6"/>
+								<item uid="5"/>
+								<item uid="11"/>
+								<item uid="18"/>
+								<item uid="28"/>
+								<item uid="3"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<item uid="6"/>
+								<item uid="1"/>
+							</isee:highlight_list>
+						</isee:model_view>
+					</view>
+					<view background="white" page_width="1066" page_height="600" zoom="40" type="interface">
+						<style>
+							<isee:stacked_container text_align="left" vertical_text_align="top" font_size="12pt" padding="6 8" border_color="#999999" border_width="thin" border_style="solid" item_spacing="0" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD" transparent_bg="false"/>
+						</style>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="533" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<entity name="Effect_of_price_on_demand"/>
+								<entity name="Traders_expected_price"/>
+								<item uid="8"/>
+								<item uid="25"/>
+								<entity name="Effect_of_oil_price_change_on_Non_OPEC_oil_supply"/>
+								<item uid="11"/>
+								<item uid="3"/>
+								<entity name="Reference_Non_OPEC_supply"/>
+								<entity name="Time_to_adjust_demand"/>
+								<entity name="Price"/>
+								<item uid="12"/>
+								<item uid="1"/>
+								<item uid="22"/>
+								<entity name="Global_oil_demand"/>
+								<entity name="Time_to_adjust_traders_expected_price"/>
+								<item uid="32"/>
+								<entity name="Demand_elasticity"/>
+								<item uid="21"/>
+								<item uid="29"/>
+								<item uid="4"/>
+								<item uid="9"/>
+								<entity name="Time_to_adjust_supply"/>
+								<item uid="19"/>
+								<entity name="Expected_supply"/>
+								<item uid="27"/>
+								<item uid="5"/>
+								<item uid="6"/>
+								<item uid="39"/>
+								<entity name="Expected_demand"/>
+								<item uid="14"/>
+								<item uid="7"/>
+								<entity name="Change_in_global_oil_demand"/>
+								<item uid="26"/>
+								<entity name="Reference_OPEC_supply"/>
+								<entity name="Change_in_global_oil_supply"/>
+								<item uid="33"/>
+								<item uid="24"/>
+								<entity name="Reference_price"/>
+								<entity name="Global_demand_to_supply_ratio"/>
+								<item uid="17"/>
+								<item uid="16"/>
+								<item uid="13"/>
+								<entity name="Effect_of_demand_supply_ratio_on_price"/>
+								<item uid="31"/>
+								<item uid="34"/>
+								<item uid="30"/>
+								<entity name="Reference_supply"/>
+								<item uid="15"/>
+								<entity name="OPEC_supply"/>
+								<item uid="2"/>
+								<entity name="Reference_demand"/>
+								<item uid="35"/>
+								<entity name="Global_oil_supply"/>
+								<entity name="Effect_of_price_on_OPEC_oil_supply"/>
+								<entity name="Sensitivity_of_price_to_demand_supply_ratio"/>
+								<entity name="Non_OPEC_supply"/>
+								<item uid="23"/>
+								<item uid="38"/>
+								<item uid="10"/>
+								<entity name="Change_in_traders_expected_price"/>
+								<item uid="20"/>
+								<item uid="28"/>
+								<item uid="18"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<item uid="33"/>
+								<item uid="32"/>
+								<entity name="Global_oil_demand"/>
+								<item uid="20"/>
+								<item uid="10"/>
+								<entity name="Change_in_global_oil_demand"/>
+								<entity name="Time_to_adjust_demand"/>
+								<item uid="12"/>
+								<entity name="Expected_demand"/>
+								<item uid="39"/>
+								<entity name="Effect_of_price_on_demand"/>
+								<item uid="21"/>
+								<entity name="Demand_elasticity"/>
+								<item uid="34"/>
+								<item uid="31"/>
+								<item uid="35"/>
+								<entity name="Reference_demand"/>
+								<item uid="17"/>
+								<item uid="13"/>
+							</isee:highlight_list>
+						</isee:model_view>
+					</view>
+					<view isee:template_view="template:1" background="white" page_width="1066" page_height="600" zoom="80" type="interface">
+						<style>
+							<isee:stacked_container text_align="left" vertical_text_align="top" font_size="12pt" padding="6 8" border_color="#999999" border_width="thin" border_style="solid" item_spacing="0" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD" transparent_bg="false"/>
+						</style>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="533" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<entity name="Traders_expected_price"/>
+								<entity name="Effect_of_price_on_demand"/>
+								<item uid="8"/>
+								<entity name="Effect_of_oil_price_change_on_Non_OPEC_oil_supply"/>
+								<item uid="25"/>
+								<item uid="11"/>
+								<item uid="32"/>
+								<entity name="Time_to_adjust_traders_expected_price"/>
+								<entity name="Demand_elasticity"/>
+								<item uid="21"/>
+								<entity name="Reference_Non_OPEC_supply"/>
+								<entity name="Time_to_adjust_demand"/>
+								<entity name="Price"/>
+								<item uid="12"/>
+								<item uid="1"/>
+								<item uid="22"/>
+								<entity name="Global_oil_demand"/>
+								<entity name="Change_in_global_oil_supply"/>
+								<item uid="19"/>
+								<item uid="29"/>
+								<item uid="4"/>
+								<item uid="9"/>
+								<entity name="Time_to_adjust_supply"/>
+								<item uid="5"/>
+								<item uid="6"/>
+								<item uid="39"/>
+								<entity name="Expected_demand"/>
+								<item uid="31"/>
+								<item uid="34"/>
+								<item uid="14"/>
+								<item uid="7"/>
+								<item uid="26"/>
+								<entity name="Change_in_global_oil_demand"/>
+								<entity name="Reference_OPEC_supply"/>
+								<item uid="30"/>
+								<item uid="15"/>
+								<entity name="Reference_supply"/>
+								<entity name="Change_in_traders_expected_price"/>
+								<item uid="20"/>
+								<entity name="OPEC_supply"/>
+								<item uid="27"/>
+								<entity name="Expected_supply"/>
+								<entity name="Effect_of_demand_supply_ratio_on_price"/>
+								<item uid="13"/>
+								<item uid="16"/>
+								<entity name="Global_demand_to_supply_ratio"/>
+								<item uid="17"/>
+								<entity name="Sensitivity_of_price_to_demand_supply_ratio"/>
+								<entity name="Global_oil_supply"/>
+								<entity name="Effect_of_price_on_OPEC_oil_supply"/>
+								<item uid="33"/>
+								<entity name="Reference_price"/>
+								<item uid="24"/>
+								<item uid="23"/>
+								<item uid="38"/>
+								<item uid="10"/>
+								<entity name="Non_OPEC_supply"/>
+								<item uid="28"/>
+								<item uid="18"/>
+								<item uid="3"/>
+								<item uid="35"/>
+								<item uid="2"/>
+								<entity name="Reference_demand"/>
+							</isee:visible_list>
+							<isee:highlight_list/>
+						</isee:model_view>
+						<isee:annotation popup_background_color="#45FFEA" popup_font_weight="bold" popup_text_align="center" popup_font_size="22pt" launcher_label="" show_by_default="true" hide_launcher="true" launch_on_hover="false" x="910" y="50">
+							<popup x="589" y="5" width="472" height="50">
+								<text>Final Model with Price, Demand and Supply</text>
+							</popup>
+						</isee:annotation>
+					</view>
+				</isee:story>
+			</isee:stories>
+		</views>
+	</model>
+</xmile>
+
